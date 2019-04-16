@@ -1,6 +1,7 @@
 // Dependencies
 const express = require("express");
 const mongojs = require("mongojs");
+const mongoose = require("mongoose");
 // Require axios and cheerio. This makes the scraping possible
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -10,10 +11,15 @@ const PORT = process.env.PORT || 3000;
 const databaseUrl = "scraper";
 const collections = ["scrapedData"];
 
+
 const db = mongojs(databaseUrl, collections);
 db.on("error", error => {
     console.log("Database Error:", error);
 });
+
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+
+mongoose.connect(MONGODB_URI);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());

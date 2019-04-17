@@ -1,0 +1,11 @@
+{{#each data}}
+<div data-_id="{{_id}}" class="card">
+            <div class="card-header">
+                <h3>
+                    <a class="article-link" target="_blank" rel="noopener noreferrer" href="https://www.nytimes.com/{{link}}">{{title}}</a>
+                    <a class="btn btn-success save">Save Article</a>
+                </h3>
+            </div>
+            <div class="card-body">{{summary}}</div>
+        </div>
+{{/each}}

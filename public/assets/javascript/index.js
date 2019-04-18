@@ -6,6 +6,7 @@ $(document).ready(function() {
   
     function initPage() {
       $.get("/api/headlines?saved=false").then(function(data) {
+        console.log(data);
         articleContainer.empty();
         if (data && data.length) {
           renderArticles(data);
@@ -77,18 +78,13 @@ $(document).ready(function() {
         data: articleToSave
       }).then(function(data) {
         if (data.saved) {
-          // Run the initPage function again. This will reload the entire list of articles
           initPage();
         }
       });
     }
   
     function handleArticleScrape() {
-      // This function handles the user clicking any "scrape new article" buttons
       $.get("/api/fetch").then(function(data) {
-        // If we are able to successfully scrape the NYTIMES and compare the articles to those
-        // already in our collection, re render the articles on the page
-        // and let the user know how many unique articles we were able to save
         initPage();
         bootbox.alert($("<h3 class='text-center m-top-80'>").text(data.message));
       });

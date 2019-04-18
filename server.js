@@ -12,13 +12,6 @@ const PORT = process.env.PORT || 3000;
 // Require all models
 const db = require("./models");
 
-// const databaseUrl = "scraper";
-// const collections = ["scrapedData"];
-// const db = mongojs(databaseUrl, collections);
-// db.on("error", error => {
-//     console.log("Database Error:", error);
-// });
-
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 mongoose.connect(MONGODB_URI);
 var mc = mongoose.connection;
@@ -36,66 +29,120 @@ app.engine(
 app.set("view engine", "handlebars");
 
 app.get("/", (req, res) => {
-    db.Article.find({}, (error, found) => {
+    db.Article.find({ saved: false }, (error, found) => {
         if (error) {
             console.log(error);
             res.status(500).json(error);
         } else {
-            res.status(200).render("index",{data: found});
+            res.status(200).render("index", { data: found });
         }
     });
 });
 
 app.get("/api/clear", (req, res) => {
-    mc.dropCollection('articles',(err,data)=>{
-        res.status(200).json("clear");
+    mc.dropCollection('articles', (err, data) => {
+        mc.dropCollection('notes', (err1, data1) => {
+            res.status(200).json("clear");
+        });
     });
 });
 
 app.get("/api/headlines", (req, res) => {
-    let flag = false;
-    if (req.body.saved) flag=true;
-    db.Article.find({}, (error, found) => {
+    db.Article.find({ saved: req.query.saved }, (error, found) => {
         if (error) {
             console.log(error);
+            res.status(500).json(error);
         } else {
-            res.json(found);
+            res.status(200).json(found);
         }
     });
 });
 
-app.get("/api/fetch", (req, res) => {
-    // axios.get("https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B").then(response => {
-    //     let $ = cheerio.load(response.data);
-    //     let results = [];
-    //     $(".img-hover-wrap .js_list_link").each(function (i, element) {
-    //         let title = $(element).attr("title");
-    //         let link = $(element).children().attr("data-original");
-    //         results.push({
-    //             link: link,
-    //             title: title
-    //         });
-    //     });
-    //     db.scrapedData.insert(results);
-    //     res.json(results);
-    // });
+app.get("/saved", (req, res) => {
+    db.Article.find({ saved: true }, (error, found) => {
+        if (error) {
+            console.log(error);
+            res.status(500).json(error);
+        } else {
+            res.status(200).render("saved", { data: found });
+        }
+    });
+});
 
+app.get("/api/notes/:id", (req, res) => {
+    db.Article.findOne({ _id: req.params.id })
+        .populate("notes").then(found => {
+            res.status(200).json(found.notes);
+        }).catch(error => {
+            console.log(error);
+            res.status(500).json(error);
+        });
+});
+
+app.delete("/api/notes/:id", (req, res) => {
+    db.Article.findOneAndUpdate({ $pull: { notes: req.params.id } })
+        .then(found => {
+            db.Note.findByIdAndRemove({ _id: req.params.id },
+                (error, data) => {
+                    if (error) {
+                        console.log(error);
+                        res.status(500).json(error);
+                    } else {
+                        res.status(200).json(data);
+                    }
+                });
+
+        }).catch(error => {
+            console.log(error);
+            res.status(500).json(error);
+        });
+});
+
+app.delete("/api/headlines/:id", (req, res) => {
+    db.Article.findOneAndUpdate({ _id: req.params.id }, { $set: { notes: [], saved: false } })
+        .then(found => {
+            res.status(200).json({ ok: true });
+        }).catch(error => {
+            console.log(error);
+            res.status(500).json(error);
+        });
+});
+
+app.post("/api/notes", (req, res) => {
+    db.Note.create({ noteText: req.body.noteText })
+        .then(dbNote => {
+            return db.Article.findOneAndUpdate({ _id: req.body._headlineId }, { $push: { notes: dbNote._id } }, { new: true });
+        })
+        .then(found => {
+            res.status(200).json(found);
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json(error);
+        });
+});
+
+app.put("/api/headlines/:id", (req, res) => {
+    db.Article.findOneAndUpdate({ _id: req.params.id }, { saved: true }).then((data) => {
+        res.status(200).json(data);
+    }).catch((err) => {
+        res.status(500).json(err);
+    });
+});
+
+app.get("/api/fetch", (req, res) => {
     axios.get("https://www.nytimes.com").then(response => {
         let $ = cheerio.load(response.data);
         let results = [];
 
-        $(".css-6p6lnl").each(function (i, element) { //css-8atqhb
-            //let title = $(element).children().text();
-            //let title = $(element).find("span").text();
-            //let link = $(element).find("a").attr("href");
-
-            let title = $(element).find("h2").text();
-            let summary = $(element).find("ul").find("li").text();
+        $("article").each(function (i, element) { //css-6p6lnl css-8atqhb
+            let title = $(element).children().find("h2").text();
             let link = $(element).find("a").attr("href");
+            let summary = $(element).find("ul").find("li").text();
             if (summary) {
                 results.push({
                     title: title,
-                    link: link,
+                    link: "https://www.nytimes.com/" + link,
                     summary: summary
                 });
             }
@@ -108,10 +155,38 @@ app.get("/api/fetch", (req, res) => {
             .catch(err => {
                 res.status(500).json(err);
             });
-        // console.log(results);
-        // res.send("test");
     });
-})
+});
+//-----------------------------------------------Zaful
+app.get("/api/fetch/clothes", (req, res) => {
+    axios.get("https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B").then(response => {
+        let $ = cheerio.load(response.data);
+        let results = [];
+        $(".img-hover-wrap .js_list_link").each(function (i, element) {
+            let title = $(element).attr("title");
+            let summary = $(element).children().attr("data-original");
+            let link = $(element).attr("href");
+            results.push({
+                summary: summary,
+                title: title,
+                link: link
+            });
+        });
+        // db.Article.insert(results);
+        // console.log(results);
+        // res.json(results);
+
+        db.Article.create(results)
+            .then(results => {
+                res.status(200).json(results);
+            })
+            .catch(err => {
+                res.status(500).json(err);
+            });
+
+    });
+});
+//-----------------------------------------------Zaful
 
 // Listen on port 3000
 app.listen(PORT, () => {

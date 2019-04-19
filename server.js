@@ -183,7 +183,7 @@ app.get("/api/fetch/clothes", (req, res) => {
         let $ = cheerio.load(response.data);
         let results = [];
         $(".img-hover-wrap .js_list_link").each(function (i, element) {
-            if (dressCount <= 10) {
+            if (dressCount < 5) {
                 let title = $(element).attr("title").trim();
                 let summary = $(element).children().attr("data-original").trim();
                 let link = $(element).attr("href").trim();

@@ -180,7 +180,7 @@ app.get("/api/fetch", (req, res) => {
 app.get("/api/fetch/clothes", (req, res) => {
     console.log("/api/fetch/clothes");
     var dressCount = 0;
-    axios.get("https://cors-anywhere.herokuapp.com/https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B").then(response => {
+    axios.get("https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B").then(response => {
         console.log("/api/fetch/clothes-------axios");
         let $ = cheerio.load(response.data);
         let results = [];

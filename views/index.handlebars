@@ -37,6 +37,9 @@
                 <li class="nav-item">
                     <a class="btn btn-warning scrape-clothes">SCRAPE NEW CLOTHES!</a>
                 </li>
+                <li class="nav-item">
+                    <a class="btn btn-warning clearClothes">CLEAR CLOTHES!</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -51,23 +54,27 @@
             <p>New York Times Edition</p>
         </div>
     </div>
-    <div class="card">
-        <div class="card-header" id="clothes">
-            {{#if data1}}
-            {{#each data1}}
-            <div data-_id="{{_id}}" class="card card1">
-                <div class="clothes1">
-                    <a class='article-link' target='_blank' rel='noopener noreferrer' href='{{link}}' alt="{{title}}">
-                        <img class='clothes' src="{{summary}}">
-                    </a>
+    <div id="clothesContainer">
+        {{#if data1}}
+        <div class="card">
+            <div class="card-header" id="clothes">
+                {{#each data1}}
+                <div data-_id="{{_id}}" class="card card1">
+                    <div class="clothes1">
+                        <a class='article-link' target='_blank' rel='noopener noreferrer' href='{{link}}'
+                            alt="{{title}}">
+                            <img class='clothes' src="{{summary}}">
+                        </a>
+                    </div>
+                    <span class='title'>{{title}}</span>
+                    <a class='btn btn-success saveDress'>Save Dress</a>
                 </div>
+                {{/each}}
             </div>
-            {{/each}}
-            {{/if}}
         </div>
+        {{/if}}
     </div>
     <div class="container-fluid article-container">
-
         {{#if data}}
         {{#each data}}
         <div data-_id="{{_id}}" class="card">

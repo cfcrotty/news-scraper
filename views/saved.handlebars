@@ -25,11 +25,13 @@
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="/saved">Saved Articles
-
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="btn btn-danger clear">CLEAR ARTICLES!</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-warning clearClothes">CLEAR CLOTHES!</a>
                 </li>
             </ul>
         </div>
@@ -44,19 +46,33 @@
             <p>Your Saved Articles</p>
         </div>
     </div>
-            <div class="card">
+    <div id="clothesContainer">
+        {{#if data1}}
+        <div class="card">
             <div class="card-header" id="clothes">
-test
+                {{#each data1}}
+                <div data-_id="{{_id}}" class="card card1">
+                    <div class="clothes1">
+                        <a class='article-link' target='_blank' rel='noopener noreferrer' href='{{link}}'
+                            alt="{{title}}">
+                            <img class='clothes' src="{{summary}}">
+                        </a>
+                    </div>
+                    <span class='title'>{{title}}</span>
+                    <a class='btn btn-danger deleteDress'>Delete From Saved</a>
+                </div>
+                {{/each}}
             </div>
         </div>
+        {{/if}}
+    </div>
     <div class="container-fluid article-container">
         {{#if data}}
         {{#each data}}
         <div data-_id="{{_id}}" class="card">
             <div class="card-header">
                 <h3>
-                    <a class="article-link" target="_blank" rel="noopener noreferrer"
-                        href="{{link}}">{{title}}</a>
+                    <a class="article-link" target="_blank" rel="noopener noreferrer" href="{{link}}">{{title}}</a>
                     <a class="btn btn-danger delete">Delete From Saved</a>
                     <a class="btn btn-info notes">Article Notes</a>
                 </h3>

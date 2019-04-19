@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 const db = require("./models");
 
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useFindAndModify: false });
 var mc = mongoose.connection;
 
 app.use(express.urlencoded({ extended: false }));
@@ -72,7 +72,14 @@ app.get("/saved", (req, res) => {
             console.log(error);
             res.status(500).json(error);
         } else {
-            res.status(200).render("saved", { data: found });
+            db.Clothe.find({ saved: true }, (error1, found1) => {
+                if (error1) {
+                    console.log(error1);
+                    res.status(500).json(error1);
+                } else {
+                    res.status(200).render("saved", { data: found, data1: found1 });
+                }
+            });
         }
     });
 });
@@ -117,7 +124,7 @@ app.delete("/api/headlines/:id", (req, res) => {
 });
 
 app.post("/api/notes", (req, res) => {
-    db.Note.create({ noteText: req.body.noteText })
+    db.Note.create({ noteText: req.body.noteText.trim() })
         .then(dbNote => {
             return db.Article.findOneAndUpdate({ _id: req.body._headlineId }, { $push: { notes: dbNote._id } }, { new: true });
         })
@@ -144,9 +151,9 @@ app.get("/api/fetch", (req, res) => {
         let results = [];
 
         $("article").each(function (i, element) { //css-6p6lnl css-8atqhb
-            let title = $(element).children().find("h2").text();
-            let link = $(element).find("a").attr("href");
-            let summary = $(element).find("ul").find("li").text();
+            let title = $(element).children().find("h2").text().trim();
+            let link = $(element).find("a").attr("href").trim();
+            let summary = $(element).find("ul").find("li").text().trim();
             if (summary) {
                 results.push({
                     title: title,
@@ -172,9 +179,9 @@ app.get("/api/fetch/clothes", (req, res) => {
         let $ = cheerio.load(response.data);
         let results = [];
         $(".img-hover-wrap .js_list_link").each(function (i, element) {
-            let title = $(element).attr("title");
-            let summary = $(element).children().attr("data-original");
-            let link = $(element).attr("href");
+            let title = $(element).attr("title").trim();
+            let summary = $(element).children().attr("data-original").trim();
+            let link = $(element).attr("href").trim();
             results.push({
                 summary: summary,
                 title: title,
@@ -184,7 +191,6 @@ app.get("/api/fetch/clothes", (req, res) => {
 
         db.Clothe.create(results)
             .then(result => {
-                console.log(result);
                 res.status(200).json(result);
             })
             .catch(err => {
@@ -203,6 +209,33 @@ app.get("/api/clothes", (req, res) => {
             res.status(200).json(found);
         }
     });
+});
+
+app.get("/api/clear/clothes", (req, res) => {
+    mc.dropCollection('clothes', (err, data) => {
+        //mc.dropCollection('notes', (err1, data1) => {
+            res.status(200).json("clear");
+        //});
+    });
+});
+
+app.put("/api/clothes/:id", (req, res) => {
+    db.Clothe.findOneAndUpdate({ _id: req.params.id }, { saved: true }).then((data) => {
+        data.saved=true;
+        res.status(200).json(data);
+    }).catch((err) => {
+        res.status(500).json(err);
+    });
+});
+
+app.delete("/api/clothes/:id", (req, res) => {
+    db.Clothe.findOneAndUpdate({ _id: req.params.id }, { $set: { notes: [], saved: false } })
+        .then(found => {
+            res.status(200).json({ ok: true });
+        }).catch(error => {
+            console.log(error);
+            res.status(500).json(error);
+        });
 });
 //-----------------------------------------------Zaful
 

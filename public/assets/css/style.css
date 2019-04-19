@@ -127,7 +127,8 @@ html {
   }
   
   .navbar-nav > li > a.scrape-new,
-  .navbar-nav > li > a.clear {
+  .navbar-nav > li > a.clear,
+  .navbar-nav > li > a.scrape-clothes {
     padding: 10px;
     margin-top: 10px;
     margin-left: 10px;
@@ -136,7 +137,8 @@ html {
   }
   
   .navbar-nav > li > a.scrape-new:hover,
-  .navbar-nav > li > a.clear:hover {
+  .navbar-nav > li > a.clear:hover,
+  .navbar-nav > li > a.scrape-clothes:hover {
     background: #4caf50;
   }
   
@@ -166,4 +168,23 @@ html {
   .note.list-group-item .btn {
     position: relative;
     bottom: 10px;
+  }
+
+  #clothes {
+    height: 300px;
+    background-color: #e3ebf1;
+    overflow: auto;
+  }
+
+  .clothes {
+    width: 200px;
+    height: 260px;
+    display: inline-block;
+  }
+  .clothes1 {
+    display: inline;
+  }
+
+  .card1 {
+    display: inline-block;
   }

@@ -34,7 +34,15 @@ app.get("/", (req, res) => {
             console.log(error);
             res.status(500).json(error);
         } else {
-            res.status(200).render("index", { data: found });
+            //res.status(200).render("index", { data: found });
+            db.Clothe.find({ saved: false }, (error1, found1) => {
+                if (error) {
+                    console.log(error);
+                    res.status(500).json(error);
+                } else {
+                    res.status(200).render("index", { data: found, data1: found1 });
+                }
+            });
         }
     });
 });
@@ -143,7 +151,8 @@ app.get("/api/fetch", (req, res) => {
                 results.push({
                     title: title,
                     link: "https://www.nytimes.com/" + link,
-                    summary: summary
+                    summary: summary,
+                    type: "nyt"
                 });
             }
         });
@@ -172,18 +181,27 @@ app.get("/api/fetch/clothes", (req, res) => {
                 link: link
             });
         });
-        // db.Article.insert(results);
-        // console.log(results);
-        // res.json(results);
 
-        db.Article.create(results)
-            .then(results => {
-                res.status(200).json(results);
+        db.Clothe.create(results)
+            .then(result => {
+                console.log(result);
+                res.status(200).json(result);
             })
             .catch(err => {
                 res.status(500).json(err);
             });
 
+    });
+});
+
+app.get("/api/clothes", (req, res) => {
+    db.Clothe.find({ saved: req.query.saved }, (error, found) => {
+        if (error) {
+            console.log(error);
+            res.status(500).json(error);
+        } else {
+            res.status(200).json(found);
+        }
     });
 });
 //-----------------------------------------------Zaful

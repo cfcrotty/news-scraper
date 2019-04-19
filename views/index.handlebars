@@ -34,6 +34,9 @@
                 <li class="nav-item">
                     <a class="btn btn-danger clear">CLEAR ARTICLES!</a>
                 </li>
+                <li class="nav-item">
+                    <a class="btn btn-warning scrape-clothes">SCRAPE NEW CLOTHES!</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -48,14 +51,29 @@
             <p>New York Times Edition</p>
         </div>
     </div>
+    <div class="card">
+        <div class="card-header" id="clothes">
+            {{#if data1}}
+            {{#each data1}}
+            <div data-_id="{{_id}}" class="card card1">
+                <div class="clothes1">
+                    <a class='article-link' target='_blank' rel='noopener noreferrer' href='{{link}}' alt="{{title}}">
+                        <img class='clothes' src="{{summary}}">
+                    </a>
+                </div>
+            </div>
+            {{/each}}
+            {{/if}}
+        </div>
+    </div>
     <div class="container-fluid article-container">
+
         {{#if data}}
         {{#each data}}
         <div data-_id="{{_id}}" class="card">
             <div class="card-header">
                 <h3>
-                    <a class="article-link" target="_blank" rel="noopener noreferrer"
-                        href="{{link}}">{{title}}</a>
+                    <a class="article-link" target="_blank" rel="noopener noreferrer" href="{{link}}">{{title}}</a>
                     <a class="btn btn-success save">Save Article</a>
                 </h3>
             </div>

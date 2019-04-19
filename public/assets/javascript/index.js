@@ -1,12 +1,13 @@
 $(document).ready(function() {
     var articleContainer = $(".article-container");
+    var clothesContainer = $("#clothes");
     $(document).on("click", ".btn.save", handleArticleSave);
     $(document).on("click", ".scrape-new", handleArticleScrape);
+    $(document).on("click", ".scrape-clothes", handleClothingScrape);
     $(".clear").on("click", handleArticleClear);
   
     function initPage() {
       $.get("/api/headlines?saved=false").then(function(data) {
-        console.log(data);
         articleContainer.empty();
         if (data && data.length) {
           renderArticles(data);
@@ -96,4 +97,69 @@ $(document).ready(function() {
         initPage();
       });
     }
+
+    function initPageClothes() {
+      $.get("/api/clothes?saved=false").then(function(data) {
+        clothesContainer.empty();
+        if (data && data.length) {
+          renderClothes(data);
+        } 
+        // else {
+        //   renderEmptyClothes();
+        // }
+      });
+    }
+
+    function renderClothes(clothes) {
+      var clothesCards = [];
+      for (var i = 0; i < clothes.length; i++) {
+        clothesCards.push(createCardClothes(clothes[i]));
+      }
+      clothesContainer.append(clothesCards);
+    }
+  
+    function createCardClothes(clothes) {
+      let card = $("<div class='card card1'>");
+      var cardHeader = $("<div class='clothes1'>").append(
+        $(`<a class='article-link' target='_blank' rel='noopener noreferrer' href="{{clothes.link}}">`).append(
+          $(`<img class='clothes' src="${clothes.summary}">`)
+          //$("<a class='btn btn-success save'>Save Dress</a>"),
+          //$("p").text(clothes.title)
+        )
+      );
+  
+      //var cardBody = $("<div class='card-body'>").text(clothes.summary);
+
+      card.append(cardHeader);
+      card.data("_id", clothes._id);
+      return card;
+    }
+  
+    // function renderEmptyClothes() {
+    //   var emptyAlert = $(
+    //     [
+    //       "<div class='alert alert-warning text-center'>",
+    //       "<h4>Uh Oh. Looks like we don't have any new articles.</h4>",
+    //       "</div>",
+    //       "<div class='card'>",
+    //       "<div class='card-header text-center'>",
+    //       "<h3>What Would You Like To Do?</h3>",
+    //       "</div>",
+    //       "<div class='card-body text-center'>",
+    //       "<h4><a class='scrape-new'>Try Scraping New Articles</a></h4>",
+    //       "<h4><a href='/saved'>Go to Saved Articles</a></h4>",
+    //       "</div>",
+    //       "</div>"
+    //     ].join("")
+    //   );
+    //   articleContainer.append(emptyAlert);
+    // }
+
+    function handleClothingScrape() {
+      $.get("/api/fetch/clothes").then(function(data) {
+        initPageClothes();
+        bootbox.alert($("<h3 class='text-center m-top-80'>").text(data.message));
+      });
+    }
   });
+  

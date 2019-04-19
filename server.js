@@ -171,22 +171,29 @@ app.get("/api/fetch", (req, res) => {
             .catch(err => {
                 res.status(500).json(err);
             });
+    }).catch(error => {
+        console.log(error);
+        res.status(500).json(error);
     });
 });
 //-----------------------------------------------Zaful
 app.get("/api/fetch/clothes", (req, res) => {
+    var dressCount = 0;
     axios.get("https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B").then(response => {
         let $ = cheerio.load(response.data);
         let results = [];
         $(".img-hover-wrap .js_list_link").each(function (i, element) {
-            let title = $(element).attr("title").trim();
-            let summary = $(element).children().attr("data-original").trim();
-            let link = $(element).attr("href").trim();
-            results.push({
-                summary: summary,
-                title: title,
-                link: link
-            });
+            if (dressCount <= 10) {
+                let title = $(element).attr("title").trim();
+                let summary = $(element).children().attr("data-original").trim();
+                let link = $(element).attr("href").trim();
+                results.push({
+                    summary: summary,
+                    title: title,
+                    link: link
+                });
+                dressCount++;
+            }
         });
 
         db.Clothe.create(results)
@@ -197,6 +204,9 @@ app.get("/api/fetch/clothes", (req, res) => {
                 res.status(500).json(err);
             });
 
+    }).catch(error => {
+        console.log(error);
+        res.status(500).json(error);
     });
 });
 
@@ -214,14 +224,14 @@ app.get("/api/clothes", (req, res) => {
 app.get("/api/clear/clothes", (req, res) => {
     mc.dropCollection('clothes', (err, data) => {
         //mc.dropCollection('notes', (err1, data1) => {
-            res.status(200).json("clear");
+        res.status(200).json("clear");
         //});
     });
 });
 
 app.put("/api/clothes/:id", (req, res) => {
     db.Clothe.findOneAndUpdate({ _id: req.params.id }, { saved: true }).then((data) => {
-        data.saved=true;
+        data.saved = true;
         res.status(200).json(data);
     }).catch((err) => {
         res.status(500).json(err);

@@ -111,7 +111,9 @@ $(document).ready(function () {
   }
 
   function initPageClothes() {
+    console.log("-------------initPageClothes------------");
     $.get("/api/clothes?saved=false").then(function (data) {
+      console.log("-------------/api/clothes?saved=false------------");
       clothesContainer.empty();
       if (data && data.length) {
         renderClothes(data);
@@ -136,6 +138,7 @@ $(document).ready(function () {
 
   function handleClothingScrape() {
     $.get("/api/fetch/clothes").then(function (data) {
+      console.log("/api/fetch/clothes--------handleClothingScrape----");
       initPageClothes();
       bootbox.alert($("<h3 class='text-center m-top-80'>").text(data.message));
     });

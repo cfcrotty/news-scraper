@@ -179,34 +179,37 @@ app.get("/api/fetch", (req, res) => {
 //-----------------------------------------------Zaful
 app.get("/api/fetch/clothes", (req, res) => {
     console.log("/api/fetch/clothes");
-    var dressCount = 0;
-    axios.get("https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B").then(response => {
+    var dressCount = 0; //https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B
+    //  https://www.onetribeapparel.com/collections/boho-dresses
+    axios.get("https://www.zalora.com.ph/women/clothing/dresses/").then(response => {
         console.log("/api/fetch/clothes-------axios");
-        let $ = cheerio.load(response.data);
-        let results = [];
-        $(".img-hover-wrap .js_list_link").each(function (i, element) {
-            //if (dressCount < 5) {
-                let title = $(element).attr("title").trim();
-                let summary = $(element).children().attr("data-original").trim();
-                let link = $(element).attr("href").trim();
-                results.push({
-                    summary: summary,
-                    title: title,
-                    link: link
-                });
-                dressCount++;
-            //}
-        });
+        // let $ = cheerio.load(response.data);
+        // let results = [];
+        // $(".img-hover-wrap .js_list_link").each(function (i, element) {
+        //     //if (dressCount < 5) {
+        //         let title = $(element).attr("title").trim();
+        //         let summary = $(element).children().attr("data-original").trim();
+        //         let link = $(element).attr("href").trim();
+        //         results.push({
+        //             summary: summary,
+        //             title: title,
+        //             link: link
+        //         });
+        //         dressCount++;
+        //     //}
+        // });
 
-        db.Clothe.create(results)
-            .then(result => {
-                console.log("/api/fetch/clothes------------create");
-                res.status(200).json(result);
-            })
-            .catch(err => {
-                console.log("/api/fetch/clothes------------create----------error");
-                res.status(500).json(err);
-            });
+        console.log(response);
+
+        // db.Clothe.create(results)
+        //     .then(result => {
+        //         console.log("/api/fetch/clothes------------create");
+        //         res.status(200).json(result);
+        //     })
+        //     .catch(err => {
+        //         console.log("/api/fetch/clothes------------create----------error");
+        //         res.status(500).json(err);
+        //     });
 
     }).catch(error => {
         console.log("/api/fetch/clothes-----------------error");

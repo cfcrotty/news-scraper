@@ -1,4 +1,5 @@
 // Dependencies
+const path = require("path");
 const express = require("express");
 const mongojs = require("mongojs");
 const mongoose = require("mongoose");
@@ -176,16 +177,10 @@ app.get("/api/fetch", (req, res) => {
         res.status(500).json(error);
     });
 });
-//-----------------------------------------------Zaful
+//-----------------------------------------------Dress.ph
 app.get("/api/fetch/clothes", (req, res) => {
-    console.log("/api/fetch/clothes");
-    var dressCount = 0; //https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B
-    //  https://www.onetribeapparel.com/collections/boho-dresses
-    axios.get("https://www.zalora.com.ph/women/clothing/dresses/").then(response => {
-        console.log("/api/fetch/clothes-------axios");
-        // let $ = cheerio.load(response.data);
-        // let results = [];
-        // $(".img-hover-wrap .js_list_link").each(function (i, element) {
+    //https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B https://www.zalora.com.ph/women/clothing/dresses https://dress.ph/cat_60_Casual-Dress/
+    // $(".img-hover-wrap .js_list_link").each(function (i, element) {
         //     //if (dressCount < 5) {
         //         let title = $(element).attr("title").trim();
         //         let summary = $(element).children().attr("data-original").trim();
@@ -198,21 +193,30 @@ app.get("/api/fetch/clothes", (req, res) => {
         //         dressCount++;
         //     //}
         // });
+    axios.get("http://dress.ph:81/cat_60_Casual-Dress").then(response => {
+        let $ = cheerio.load(response.data);
+        let results = [];
 
-        console.log(response);
+        $(".category-content-list-item").each(function (i, element) {
+            let link = $(element).children("a").attr("href").trim();
+            let summary = $(element).children().children("img").attr("data-url").trim();
+            let title = $(element).children().children("img").attr("title").trim();
+            results.push({
+                 summary: "http://dress.ph:81"+summary,
+                 title: title,
+                 link: "http://dress.ph:81"+link
+            });
+        });
 
-        // db.Clothe.create(results)
-        //     .then(result => {
-        //         console.log("/api/fetch/clothes------------create");
-        //         res.status(200).json(result);
-        //     })
-        //     .catch(err => {
-        //         console.log("/api/fetch/clothes------------create----------error");
-        //         res.status(500).json(err);
-        //     });
+        db.Clothe.create(results)
+            .then(result => {
+                res.status(200).json(result);
+            })
+            .catch(err => {
+                res.status(500).json(err);
+            });
 
     }).catch(error => {
-        console.log("/api/fetch/clothes-----------------error");
         console.log(error);
         res.status(500).json(error);
     });
@@ -256,6 +260,10 @@ app.delete("/api/clothes/:id", (req, res) => {
         });
 });
 //-----------------------------------------------Zaful
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "./public/error.html"));
+});
 
 // Listen on port 3000
 app.listen(PORT, () => {

@@ -233,3 +233,23 @@ html {
   .btn-success {
     background-color: #62a965;
   }
+
+  .body {
+    margin: 0;
+    padding: 0;
+    color: #777777;
+    font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
+    text-align: center;
+    background: url('../images/error.JPG') no-repeat center center fixed;
+    position: absolute;
+  }
+  .errorPageDiv {
+    margin: auto;
+    position: absolute;
+  }
+  .errorPageGif {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    z-index: 5;
+  }

@@ -179,20 +179,22 @@ app.get("/api/fetch", (req, res) => {
 });
 //-----------------------------------------------Dress.ph
 app.get("/api/fetch/clothes", (req, res) => {
+    //-----------------------------------------------For Zaful
     //https://www.zaful.com/dresses-e_5/?innerid=6002&policy_key=B https://www.zalora.com.ph/women/clothing/dresses https://dress.ph/cat_60_Casual-Dress/
     // $(".img-hover-wrap .js_list_link").each(function (i, element) {
-        //     //if (dressCount < 5) {
-        //         let title = $(element).attr("title").trim();
-        //         let summary = $(element).children().attr("data-original").trim();
-        //         let link = $(element).attr("href").trim();
-        //         results.push({
-        //             summary: summary,
-        //             title: title,
-        //             link: link
-        //         });
-        //         dressCount++;
-        //     //}
-        // });
+    //     //if (dressCount < 5) {
+    //         let title = $(element).attr("title").trim();
+    //         let summary = $(element).children().attr("data-original").trim();
+    //         let link = $(element).attr("href").trim();
+    //         results.push({
+    //             summary: summary,
+    //             title: title,
+    //             link: link
+    //         });
+    //         dressCount++;
+    //     //}
+    // });
+    //-----------------------------------------------For Zaful
     axios.get("http://dress.ph:81/cat_60_Casual-Dress").then(response => {
         let $ = cheerio.load(response.data);
         let results = [];
@@ -202,9 +204,9 @@ app.get("/api/fetch/clothes", (req, res) => {
             let summary = $(element).children().children("img").attr("data-url").trim();
             let title = $(element).children().children("img").attr("title").trim();
             results.push({
-                 summary: "http://dress.ph:81"+summary,
-                 title: title,
-                 link: "http://dress.ph:81"+link
+                summary: "http://dress.ph:81" + summary,
+                title: title,
+                link: "http://dress.ph:81" + link
             });
         });
 
@@ -235,9 +237,7 @@ app.get("/api/clothes", (req, res) => {
 
 app.get("/api/clear/clothes", (req, res) => {
     mc.dropCollection('clothes', (err, data) => {
-        //mc.dropCollection('notes', (err1, data1) => {
         res.status(200).json("clear");
-        //});
     });
 });
 
@@ -259,7 +259,7 @@ app.delete("/api/clothes/:id", (req, res) => {
             res.status(500).json(error);
         });
 });
-//-----------------------------------------------Zaful
+//-----------------------------------------------Dress.ph
 
 app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "./public/error.html"));

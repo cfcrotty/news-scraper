@@ -207,7 +207,11 @@ html {
   }
 
   .title {
-    position:absolute;width: 40px;font-size:10px
+    position:absolute;
+    width: 40px;
+    font-size:10px;
+    height: 210px;
+    overflow: auto;
   }
 
   .bg-primary {
@@ -252,4 +256,9 @@ html {
     width: 600px;
     height: 600px;
     z-index: 5;
+  }
+
+  #clothesContainer {
+    margin-left: 72px;
+    margin-right: 72px;
   }

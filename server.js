@@ -153,7 +153,8 @@ app.get("/api/fetch", (req, res) => {
 
         $("article").each(function (i, element) { //css-6p6lnl css-8atqhb
             let title = $(element).children().find("h2").text().trim();
-            let link = $(element).find("a").attr("href").trim();
+            let link = $(element).find("a").attr("href");
+            if (link) link = link.trim();
             let summary = $(element).find("ul").find("li").text().trim();
             if (summary) {
                 results.push({

@@ -138,10 +138,8 @@ html {
   }
   
   .navbar-nav > li > a.scrape-new:hover,
-  .navbar-nav > li > a.clear:hover,
-  .navbar-nav > li > a.scrape-clothes:hover,
-  .navbar-nav > li > a.clearClothes:hover {
-    background: #4caf50;
+  .navbar-nav > li > a.clear:hover {
+    background: #ace2ae;
   }
   
   .navbar-nav > li > a.scrape-new:active {
@@ -261,4 +259,17 @@ html {
   #clothesContainer {
     margin-left: 72px;
     margin-right: 72px;
+  }
+
+  .right {
+    margin-left: 8%;
+  }
+
+  .navbar-nav > li > a.scrape-clothes:hover,
+  .navbar-nav > li > a.clearClothes:hover {
+    background-color: pink;
+  }
+
+  .navbar-nav {
+    display: -webkit-box;
   }

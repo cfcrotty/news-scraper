@@ -151,7 +151,9 @@ $(document).ready(function () {
   }
 
   function handleArticleClear() {
-    $.get("api/clear")
+    let confirmRemove = confirm("Are you sure you want to remove saved articles?");
+    if (!confirmRemove) return;
+    $.get("api/clear/"+true)
       .then(function () {
         articleContainer.empty();
         initPage();
@@ -193,7 +195,14 @@ $(document).ready(function () {
   }
 
   function handleClothesClear() {
-    $.get("api/clear/clothes").then(function () {
+    let confirmRemove = confirm("Are you sure you want to remove saved clothes?");
+    if (!confirmRemove) return;
+    //$.get("api/clear/clothes")
+    $.ajax({
+      method: "DELETE",
+      url: "api/clear/clothes/"+true
+    })
+    .then(function () {
       clothesContainer.empty();
       initPageClothes();
     });

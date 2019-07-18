@@ -94,7 +94,9 @@ $(document).ready(function () {
   }
 
   function handleArticleClear() {
-    $.get("api/clear").then(function () {
+    let confirmRemove = confirm("Are you sure you want to remove scraped articles?");
+    if (!confirmRemove) return;
+    $.get("api/clear/"+false).then(function () {
       articleContainer.empty();
       initPage();
     });
@@ -142,7 +144,14 @@ $(document).ready(function () {
   }
 
   function handleClothesClear() {
-    $.get("api/clear/clothes").then(function () {
+    let confirmRemove = confirm("Are you sure you want to remove scraped clothes?");
+    if (!confirmRemove) return;
+    //$.get("api/clear/clothes")
+    $.ajax({
+      method: "DELETE",
+      url: "api/clear/clothes/"+false
+    })
+    .then(function () {
       clothesContainer.empty();
       initPageClothes();
     });

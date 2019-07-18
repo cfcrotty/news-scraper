@@ -48,11 +48,45 @@ app.get("/", (req, res) => {
     });
 });
 
-app.get("/api/clear", (req, res) => {
-    mc.dropCollection('articles', (err, data) => {
-        mc.dropCollection('notes', (err1, data1) => {
-            res.status(200).json("clear");
-        });
+app.get("/api/clear/:saved", (req, res) => {
+    let saved = req.params.saved;
+    // db.Article.updateMany({"saved":true}, { $set: { saved: false } })
+    // .then(found => {
+    //     res.status(200).json("clear");
+    // }).catch(error => {
+    //     console.log(error);
+    //     res.status(500).json(error);
+    // });
+    //-------To delete the whole articles and notes collections
+    // mc.dropCollection('articles', (err, data) => {
+    //     mc.dropCollection('notes', (err1, data1) => {
+    //         res.status(200).json("clear");
+    //     });
+    // });
+
+    db.Article.find({"saved":saved},function(err,data){
+        if (err) console.log(err);
+        else {
+            if (data.length>0) {
+                for(let i=0;i<data.length;i++){
+                    let nt = data[i].notes;
+                    if (nt.length>0) {
+                        db.Note.deleteMany({_id: {$in: nt}})
+                        .then(found => {
+                            console.log("removed notes");
+                        }).catch(error => {
+                            console.log(error);
+                        });
+                    }
+                }
+            }
+        }
+    }).remove().exec()
+    .then(found => {
+        res.status(200).json("clear");
+    }).catch(error => {
+        console.log(error);
+        res.status(500).json(error);
     });
 });
 
@@ -115,7 +149,7 @@ app.delete("/api/notes/:id", (req, res) => {
 });
 
 app.delete("/api/headlines/:id", (req, res) => {
-    db.Article.findOneAndUpdate({ _id: req.params.id }, { $set: { notes: [], saved: false } })
+    db.Article.findOneAndUpdate({ _id: req.params.id }, { $set: { saved: false } })
         .then(found => {
             res.status(200).json({ ok: true });
         }).catch(error => {
@@ -236,9 +270,17 @@ app.get("/api/clothes", (req, res) => {
     });
 });
 
-app.get("/api/clear/clothes", (req, res) => {
-    mc.dropCollection('clothes', (err, data) => {
+app.delete("/api/clear/clothes/:saved", (req, res) => {
+    let saved = req.params.saved;
+    // mc.dropCollection('clothes', (err, data) => {
+    //     res.status(200).json("clear");
+    // });
+    db.Clothe.remove({"saved":saved}).exec()
+    .then(found => {
         res.status(200).json("clear");
+    }).catch(error => {
+        console.log(error);
+        res.status(500).json(error);
     });
 });
 
@@ -252,7 +294,7 @@ app.put("/api/clothes/:id", (req, res) => {
 });
 
 app.delete("/api/clothes/:id", (req, res) => {
-    db.Clothe.findOneAndUpdate({ _id: req.params.id }, { $set: { notes: [], saved: false } })
+    db.Clothe.findOneAndUpdate({ _id: req.params.id }, { $set: { saved: false } })
         .then(found => {
             res.status(200).json({ ok: true });
         }).catch(error => {

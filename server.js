@@ -207,9 +207,11 @@ app.get("/api/fetch", (req, res) => {
 
         db.Article.create(results)
             .then(results => {
+                console.log("Success - Article create 1: ",results);
                 res.status(200).json(results);
             })
             .catch(err => {
+                console.log("Error - Article create 1: ",results);
                 res.status(500).json(err);
             });
     }).catch(error => {

@@ -193,9 +193,10 @@ app.put("/api/headlines/:id", (req, res) => {
 
 
 
-    app.get("/api/fetch", async (req, res) => {
-        let job = await workQueue.add();
-        res.json({ id: job.id });
+    app.get("/api/fetch", (req, res) => {
+       /* async (req, res) => {
+            let job = await workQueue.add();
+            res.json({ id: job.id });*/
         axios.get("https://www.nytimes.com").then(response => {
             let $ = cheerio.load(response.data);
             let results = [];

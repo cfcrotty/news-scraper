@@ -10,11 +10,16 @@ const exphbs = require("express-handlebars");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+
 // Require all models
 const db = require("./models");
 
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
-mongoose.connect(MONGODB_URI, { useFindAndModify: false, useUnifiedTopology: true });
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true },
+    () => console.log(" Mongoose is connected")); //, { useFindAndModify: false, useUnifiedTopology: true }
 var mc = mongoose.connection;
 
 app.use(express.urlencoded({ extended: false }));
@@ -193,7 +198,7 @@ app.get("/api/fetch", (req, res) => {
             if (link) link = link.trim();
             let summary = $(element).find("ul").find("li").text().trim();
             if (!summary) {
-                summary = $(element).find("p.summary-class").text().trim();
+                //summary = $(element).find("p.summary-class").text().trim();
             }
             if (summary) {
                 results.push({
@@ -318,5 +323,5 @@ app.get("*", (req, res) => {
 
 // Listen on port 
 app.listen(PORT, () => {
-    console.log(`Error - App running on port http://localhost:${PORT}`);
+    console.log(`App running on port http://localhost:${PORT}`);
 });

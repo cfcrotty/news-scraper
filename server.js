@@ -17,7 +17,7 @@ mongoose.set('useCreateIndex', true);
 // Require all models
 const db = require("./models");
 
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://cara:Mhaybuhay-23@cluster0.hllth.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; //"mongodb://localhost/mongoHeadlines";
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true },
     () => console.log(" Mongoose is connected")); //, { useFindAndModify: false, useUnifiedTopology: true }
 var mc = mongoose.connection;
@@ -230,7 +230,7 @@ app.get("/api/fetch", (req, res) => {
     });
 });
 
-/*app.get("/api/fetch2", (req, res) => {
+app.get("/api/fetch2", (req, res) => {
     axios.get("https://www.nytimes.com").then(response => {
         let $ = cheerio.load(response.data);
         let results = [];
@@ -269,7 +269,7 @@ app.get("/api/fetch", (req, res) => {
         console.log("Error - app get api fetch 1: ", error);
         res.status(500).json(error);
     });
-});*/
+});
 
 //-----------------------------------------------Dress.ph
 app.get("/api/fetch/clothes", (req, res) => {

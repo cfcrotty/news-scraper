@@ -13,5 +13,7 @@ const NoteSchema = new Schema({
 // This creates our model from the above schema, using mongoose's model method
 const Note = mongoose.model("Note", NoteSchema);
 
+Note.createIndexes();
+
 // Export the Note model
 module.exports = Note;

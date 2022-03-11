@@ -3,6 +3,7 @@ $(document).ready(function () {
   var clothesContainer = $("#clothesContainer");
   $(document).on("click", ".btn.save", handleArticleSave);
   $(document).on("click", ".scrape-new", handleArticleScrape);
+  $(document).on("click", ".scrape-new-2", handleArticleScrape2);
   $(document).on("click", ".scrape-clothes", handleClothingScrape);
   $(".clear").on("click", handleArticleClear);
   $(".clearClothes").on("click", handleClothesClear);
@@ -88,6 +89,13 @@ $(document).ready(function () {
 
   function handleArticleScrape() {
     $.get("/api/fetch").then(function (data) {
+      initPage();
+      bootbox.alert($("<h3 class='text-center m-top-80'>").text(data.message));
+    });
+  }
+
+  function handleArticleScrape2() {
+    $.get("/api/fetch2").then(function (data) {
       initPage();
       bootbox.alert($("<h3 class='text-center m-top-80'>").text(data.message));
     });

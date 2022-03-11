@@ -35,5 +35,7 @@ const ClotheSchema = new Schema({
 // This creates our model from the above schema, using mongoose's model method
 const Clothe = mongoose.model("Clothe", ClotheSchema);
 
+Clothe.createIndexes();
+
 // Export the Clothe model
 module.exports = Clothe;

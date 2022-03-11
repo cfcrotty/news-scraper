@@ -6,14 +6,13 @@ const Schema = mongoose.Schema;
 // Using the Schema constructor, create a new UserSchema object
 // This is similar to a Sequelize model
 const ArticleSchema = new Schema({
-  title: {
-    type: String,
+  link: {
+    type: {String, index: {unique: true, dropDups: true}},
     unique: true,
     required: true
   },
-  link: {
+  title: {
     type: String,
-    unique: true,
     required: true
   },
   summary: {
@@ -32,6 +31,8 @@ const ArticleSchema = new Schema({
 
 // This creates our model from the above schema, using mongoose's model method
 const Article = mongoose.model("Article", ArticleSchema);
+
+Article.createIndexes();
 
 // Export the Article model
 module.exports = Article;

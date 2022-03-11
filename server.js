@@ -10,7 +10,7 @@ const exphbs = require("express-handlebars");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-mongoose.set('useNewUrlParser', true);
+///mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 
@@ -193,14 +193,19 @@ app.get("/api/fetch", (req, res) => {
 
         //Update elements and classes to match changes in website - March 10, 2022 
         $("section.story-wrapper").each(function (i, element) { //css-6p6lnl css-8atqhb
-            let title = $(element).children().find("h3").text().trim();
-            let link = $(element).find("a").attr("href");
-            if (link) link = link.trim();
-            let summary = $(element).find("ul").find("li").text().trim();
-            if (!summary) {
-                //summary = $(element).find("p.summary-class").text().trim();
+            if (i>=20) {
+                return;
             }
+
+            let summary = $(element).find("ul").find("li").text().trim();
+
+            if (!summary) summary = $(element).find("p").text().trim();
+            
             if (summary) {
+                let title = $(element).children().find("h3").text().trim();
+                let link = $(element).find("a").attr("href");
+                if (link) link = link.trim();
+
                 results.push({
                     title: title,
                     link: "https://www.nytimes.com/" + link,
@@ -224,6 +229,48 @@ app.get("/api/fetch", (req, res) => {
         res.status(500).json(error);
     });
 });
+
+/*app.get("/api/fetch2", (req, res) => {
+    axios.get("https://www.nytimes.com").then(response => {
+        let $ = cheerio.load(response.data);
+        let results = [];
+
+        //Update elements and classes to match changes in website - March 10, 2022 
+        $("section.story-wrapper").each(function (i, element) { //css-6p6lnl css-8atqhb
+            if (i>=5) {
+                return;
+            }
+            let summary = $(element).find("p").text().trim();
+           
+            if (summary) {
+                let title = $(element).children().find("h3").text().trim();
+                let link = $(element).find("a").attr("href");
+                if (link) link = link.trim();
+
+                results.push({
+                    title: title,
+                    link: "https://www.nytimes.com/" + link,
+                    summary: summary,
+                    type: "nyt"
+                });
+            }
+        });
+
+        db.Article.create(results)
+            .then(results => {
+                console.log("Success - Article create 1: ",results);
+                res.status(200).json(results);
+            })
+            .catch(err => {
+                console.log("Error - Article create 1: ",results);
+                res.status(500).json(err);
+            });
+    }).catch(error => {
+        console.log("Error - app get api fetch 1: ", error);
+        res.status(500).json(error);
+    });
+});*/
+
 //-----------------------------------------------Dress.ph
 app.get("/api/fetch/clothes", (req, res) => {
     //-----------------------------------------------For Zaful

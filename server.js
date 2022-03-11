@@ -9,6 +9,9 @@ const cheerio = require("cheerio");
 const exphbs = require("express-handlebars");
 const app = express();
 const PORT = process.env.PORT || 3000;
+const redis = require("redis");
+//let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+//let workQueue = new Queue('work', REDIS_URL);
 
 ///mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -186,7 +189,58 @@ app.put("/api/headlines/:id", (req, res) => {
     });
 });
 
-app.get("/api/fetch", (req, res) => {
+
+
+
+
+    app.get("/api/fetch", async (req, res) => {
+        let job = await workQueue.add();
+        res.json({ id: job.id });
+        axios.get("https://www.nytimes.com").then(response => {
+            let $ = cheerio.load(response.data);
+            let results = [];
+
+            
+    
+            //Update elements and classes to match changes in website - March 10, 2022 
+            $("section.story-wrapper").each(function (i, element) { //css-6p6lnl css-8atqhb
+                if (i>=1) {
+                    return;
+                }
+    
+                let summary = $(element).find("ul").find("li").text().trim();
+    
+                if (!summary) summary = $(element).find("p").text().trim();
+                
+                if (summary) {
+                    let title = $(element).children().find("h3").text().trim();
+                    let link = $(element).find("a").attr("href");
+                    if (link) link = link.trim();
+    
+                    results.push({
+                        title: title,
+                        link: "https://www.nytimes.com/" + link,
+                        summary: summary,
+                        type: "nyt"
+                    });
+                }
+            });
+    
+            db.Article.create(results)
+                .then(results => {
+                    console.log("Success - Article create 1: ",results);
+                    res.status(200).json(results);
+                })
+                .catch(err => {
+                    console.log("Error - Article create 1: ",results);
+                    res.status(500).json(err);
+                });
+        }).catch(error => {
+            console.log("Error - app get api fetch 1: ", error);
+            res.status(500).json(error);
+        });
+    });
+/*app.get("/api/fetch", (req, res) => {
     axios.get("https://www.nytimes.com").then(response => {
         let $ = cheerio.load(response.data);
         let results = [];
@@ -228,7 +282,7 @@ app.get("/api/fetch", (req, res) => {
         console.log("Error - app get api fetch 1: ", error);
         res.status(500).json(error);
     });
-});
+});*/
 
 //-----------------------------------------------Dress.ph
 app.get("/api/fetch/clothes", (req, res) => {

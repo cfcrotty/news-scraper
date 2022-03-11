@@ -200,12 +200,10 @@ app.put("/api/headlines/:id", (req, res) => {
         axios.get("https://www.nytimes.com").then(response => {
             let $ = cheerio.load(response.data);
             let results = [];
-
-            
     
             //Update elements and classes to match changes in website - March 10, 2022 
             $("section.story-wrapper").each(function (i, element) { //css-6p6lnl css-8atqhb
-                if (i>=1) {
+                if (i>=10) {
                     return;
                 }
     
@@ -309,7 +307,7 @@ app.get("/api/fetch/clothes", (req, res) => {
         let results = [];
         
         $(".category-content-list-item").each(function (i, element) {
-            if (i>=1) {
+            if (i>=10) {
                 return;
             }
 

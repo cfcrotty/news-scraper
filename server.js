@@ -23,29 +23,30 @@ app.use(express.static("public"));
 
 app.engine(
     "handlebars",
-    exphbs({
+    exphbs.engine({
         defaultLayout: "main"
     })
 );
 app.set("view engine", "handlebars");
 
+//Update errors to have more data on it - March 10, 2022
 app.get("/", (req, res) => {
     db.Article.find({ saved: false }, (error, found) => {
         if (error) {
-            console.log(error);
+            console.log("Error - Article find 1: ", error);
             res.status(500).json(error);
         } else {
             //res.status(200).render("index", { data: found });
             db.Clothe.find({ saved: false }, (error1, found1) => {
                 if (error) {
-                    console.log(error);
+                    console.log("Error - Article find 2: ", error);
                     res.status(500).json(error);
                 } else {
                     res.status(200).render("index", { data: found, data1: found1 });
                 }
-            });
+            }).lean();
         }
-    });
+    }).lean();
 });
 
 app.get("/api/clear/:saved", (req, res) => {
@@ -65,7 +66,7 @@ app.get("/api/clear/:saved", (req, res) => {
     // });
 
     db.Article.find({"saved":saved},function(err,data){
-        if (err) console.log(err);
+        if (err) console.log("Error - Article find 1: ", err);
         else {
             if (data.length>0) {
                 for(let i=0;i<data.length;i++){
@@ -73,9 +74,9 @@ app.get("/api/clear/:saved", (req, res) => {
                     if (nt.length>0) {
                         db.Note.deleteMany({_id: {$in: nt}})
                         .then(found => {
-                            console.log("removed notes");
+                            console.log("Success - Article: removed notes");
                         }).catch(error => {
-                            console.log(error);
+                            console.log("Error - Article find 2: ", error);
                         });
                     }
                 }
@@ -85,7 +86,7 @@ app.get("/api/clear/:saved", (req, res) => {
     .then(found => {
         res.status(200).json("clear");
     }).catch(error => {
-        console.log(error);
+        console.log("Error - Article find 3: ", error);
         res.status(500).json(error);
     });
 });
@@ -93,30 +94,30 @@ app.get("/api/clear/:saved", (req, res) => {
 app.get("/api/headlines", (req, res) => {
     db.Article.find({ saved: req.query.saved }, (error, found) => {
         if (error) {
-            console.log(error);
+            console.log("Error - App get 1:", error);
             res.status(500).json(error);
         } else {
             res.status(200).json(found);
         }
-    });
+    }).lean();
 });
 
 app.get("/saved", (req, res) => {
     db.Article.find({ saved: true }, (error, found) => {
         if (error) {
-            console.log(error);
+            console.log("Error - Article find 1: ", error);
             res.status(500).json(error);
         } else {
             db.Clothe.find({ saved: true }, (error1, found1) => {
                 if (error1) {
-                    console.log(error1);
+                    console.log("Error - Clothe find 1: ", error1);
                     res.status(500).json(error1);
                 } else {
                     res.status(200).render("saved", { data: found, data1: found1 });
                 }
-            });
+            }).lean();
         }
-    });
+    }).lean();
 });
 
 app.get("/api/notes/:id", (req, res) => {
@@ -124,7 +125,7 @@ app.get("/api/notes/:id", (req, res) => {
         .populate("notes").then(found => {
             res.status(200).json(found.notes);
         }).catch(error => {
-            console.log(error);
+            console.log("Error - app get notes id 1: ", error);
             res.status(500).json(error);
         });
 });
@@ -135,7 +136,7 @@ app.delete("/api/notes/:id", (req, res) => {
             db.Note.findByIdAndRemove({ _id: req.params.id },
                 (error, data) => {
                     if (error) {
-                        console.log(error);
+                        console.log("Error - Note find id and remove 1: ", error);
                         res.status(500).json(error);
                     } else {
                         res.status(200).json(data);
@@ -143,7 +144,7 @@ app.delete("/api/notes/:id", (req, res) => {
                 });
 
         }).catch(error => {
-            console.log(error);
+            console.log("Error - Notes find and update 2: ",error);
             res.status(500).json(error);
         });
 });
@@ -153,7 +154,7 @@ app.delete("/api/headlines/:id", (req, res) => {
         .then(found => {
             res.status(200).json({ ok: true });
         }).catch(error => {
-            console.log(error);
+            console.log("Error - delete api headlines id 1: ", error);
             res.status(500).json(error);
         });
 });
@@ -167,7 +168,7 @@ app.post("/api/notes", (req, res) => {
             res.status(200).json(found);
         })
         .catch(error => {
-            console.log(error);
+            console.log("Error - app post api notes 1: ", error);
             res.status(500).json(error);
         });
 });
@@ -185,11 +186,15 @@ app.get("/api/fetch", (req, res) => {
         let $ = cheerio.load(response.data);
         let results = [];
 
-        $("article").each(function (i, element) { //css-6p6lnl css-8atqhb
-            let title = $(element).children().find("h2").text().trim();
+        //Update elements and classes to match changes in website - March 10, 2022 
+        $("section.story-wrapper").each(function (i, element) { //css-6p6lnl css-8atqhb
+            let title = $(element).children().find("h3").text().trim();
             let link = $(element).find("a").attr("href");
             if (link) link = link.trim();
             let summary = $(element).find("ul").find("li").text().trim();
+            if (!summary) {
+                summary = $(element).find("p.summary-class").text().trim();
+            }
             if (summary) {
                 results.push({
                     title: title,
@@ -208,7 +213,7 @@ app.get("/api/fetch", (req, res) => {
                 res.status(500).json(err);
             });
     }).catch(error => {
-        console.log(error);
+        console.log("Error - app get api fetch 1: ", error);
         res.status(500).json(error);
     });
 });
@@ -230,18 +235,19 @@ app.get("/api/fetch/clothes", (req, res) => {
     //     //}
     // });
     //-----------------------------------------------For Zaful
-    axios.get("http://dress.ph:81/cat_60_Casual-Dress").then(response => {
+    //Remove ":81" from http://dress.ph/cat_60_Casual-Dress - March 10, 2022
+    axios.get("http://dress.ph/cat_60_Casual-Dress").then(response => {
         let $ = cheerio.load(response.data);
         let results = [];
-
+        
         $(".category-content-list-item").each(function (i, element) {
             let link = $(element).children("a").attr("href").trim();
             let summary = $(element).children().children("img").attr("data-url").trim();
             let title = $(element).children().children("img").attr("title").trim();
             results.push({
-                summary: "http://dress.ph:81" + summary,
+                summary: "http://dress.ph" + summary,
                 title: title,
-                link: "http://dress.ph:81" + link
+                link: "http://dress.ph" + link
             });
         });
 
@@ -254,7 +260,7 @@ app.get("/api/fetch/clothes", (req, res) => {
             });
 
     }).catch(error => {
-        console.log(error);
+        console.log("Error - app get api fetch clothes 1: ",  error);
         res.status(500).json(error);
     });
 });
@@ -262,12 +268,12 @@ app.get("/api/fetch/clothes", (req, res) => {
 app.get("/api/clothes", (req, res) => {
     db.Clothe.find({ saved: req.query.saved }, (error, found) => {
         if (error) {
-            console.log(error);
+            console.log("Error -app get api clothes 1: ", error);
             res.status(500).json(error);
         } else {
             res.status(200).json(found);
         }
-    });
+    }).lean();
 });
 
 app.delete("/api/clear/clothes/:saved", (req, res) => {
@@ -279,7 +285,7 @@ app.delete("/api/clear/clothes/:saved", (req, res) => {
     .then(found => {
         res.status(200).json("clear");
     }).catch(error => {
-        console.log(error);
+        console.log("Error - app delete api clear clothes 1: ", error);
         res.status(500).json(error);
     });
 });
@@ -298,7 +304,7 @@ app.delete("/api/clothes/:id", (req, res) => {
         .then(found => {
             res.status(200).json({ ok: true });
         }).catch(error => {
-            console.log(error);
+            console.log("Error - app delete api clothes 1: ", error);
             res.status(500).json(error);
         });
 });
@@ -308,7 +314,7 @@ app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "./public/error.html"));
 });
 
-// Listen on port 3000
+// Listen on port 
 app.listen(PORT, () => {
-    console.log(`App running on port http://localhost:${PORT}`);
+    console.log(`Error - App running on port http://localhost:${PORT}`);
 });

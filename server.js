@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 const db = require("./models");
 
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
-mongoose.createConnection(MONGODB_URI, { useFindAndModify: false });
+mongoose.connect(MONGODB_URI, { useFindAndModify: false, useUnifiedTopology: true });
 var mc = mongoose.connection;
 
 app.use(express.urlencoded({ extended: false }));

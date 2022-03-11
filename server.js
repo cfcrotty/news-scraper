@@ -193,7 +193,7 @@ app.get("/api/fetch", (req, res) => {
 
         //Update elements and classes to match changes in website - March 10, 2022 
         $("section.story-wrapper").each(function (i, element) { //css-6p6lnl css-8atqhb
-            if (i>=20) {
+            if (i>=15) {
                 return;
             }
 
@@ -295,6 +295,10 @@ app.get("/api/fetch/clothes", (req, res) => {
         let results = [];
         
         $(".category-content-list-item").each(function (i, element) {
+            if (i>=15) {
+                return;
+            }
+
             let link = $(element).children("a").attr("href").trim();
             let summary = $(element).children().children("img").attr("data-url").trim();
             let title = $(element).children().children("img").attr("title").trim();

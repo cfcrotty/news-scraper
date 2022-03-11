@@ -14,4 +14,4 @@ The application has 2 pages -- home page and saved articles page.
 
 The project is useful because it provides an example of languages/technologies I learned and show what I can do as a developer. This application MongoDB, Node.js with Mongoose and Cheerio, Bootstrap, HTML, and CSS that is deployed in Heroku.
 
-For questions or concerns, please go to my website at caracrotty.com or send an email at cara@caracrotty.com. I maintain and developed this project.
+For questions or concerns, please go to my website at http://caracrotty.com or send an email at cara@caracrotty.com. I maintain and developed this project.

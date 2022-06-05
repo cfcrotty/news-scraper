@@ -218,7 +218,7 @@ app.put("/api/headlines/:id", (req, res) => {
     
                     results.push({
                         title: title,
-                        link: "https://www.nytimes.com/" + link,
+                        link: link,
                         summary: summary,
                         type: "nyt"
                     });
